@@ -1024,7 +1024,7 @@ public class MainWindow extends JFrame
 		gridBox.add(b3,c);
 
 		b3.add(makeToolBtn(MicropolisTool.FIRE));
-		b3.add(makeToolBtn(MicropolisTool.QUERY));
+		b3.add(makeToolBtn(MicropolisTool.DISPATCH));
 		b3.add(makeToolBtn(MicropolisTool.POLICE));
 
 		c.gridy++;
@@ -1046,6 +1046,12 @@ public class MainWindow extends JFrame
 		gridBox.add(b6,c);
 
 		b6.add(makeToolBtn(MicropolisTool.AIRPORT));
+		
+		c.gridy++;
+		Box b7 = new Box(BoxLayout.X_AXIS);
+		gridBox.add(b7,c);
+		
+		b7.add(makeToolBtn(MicropolisTool.QUERY));
 
 		// add glue to make all elements align toward top
 		c.gridy++;
