@@ -86,6 +86,8 @@ public class Micropolis
 	public int [][] fireRate;       //firestations reach- used for overlay graphs
 	int [][] policeMap;      //police stations- cleared and rebuilt each sim cycle
 	public int [][] policeMapEffect;//police stations reach- used for overlay graphs
+	int [][] dispatchMap;
+	public int [][] dispatchMapEffect;
 
 	/** For each 8x8 section of city, this is an integer between 0 and 64,
 	 * with higher numbers being closer to the center of the city. */
@@ -120,6 +122,7 @@ public class Micropolis
 	int churchCount;
 	int policeCount;
 	int fireStationCount;
+	int dispatchCount;
 	int stadiumCount;
 	int coalCount;
 	int nuclearCount;
@@ -177,6 +180,7 @@ public class Micropolis
 	int roadEffect = 32;
 	int policeEffect = 1000;
 	int fireEffect = 1000;
+	int dispatchEffect = 1000;
 
 	int cashFlow; //net change in totalFunds in previous year
 
@@ -246,6 +250,8 @@ public class Micropolis
 		policeMapEffect = new int[smY][smX];
 		fireRate = new int[smY][smX];
 		comRate = new int[smY][smX];
+		dispatchMap = new int[smY][smX];
+		dispatchMapEffect = new int[smY][smX];
 
 		centerMassX = hX;
 		centerMassY = hY;
@@ -533,6 +539,7 @@ public class Micropolis
 		churchCount = 0;
 		policeCount = 0;
 		fireStationCount = 0;
+		dispatchCount = 0;
 		stadiumCount = 0;
 		coalCount = 0;
 		nuclearCount = 0;
@@ -544,6 +551,7 @@ public class Micropolis
 			for (int x = 0; x < fireStMap[y].length; x++) {
 				fireStMap[y][x] = 0;
 				policeMap[y][x] = 0;
+				dispatchMap[y][x] = 0;
 			}
 		}
 	}
@@ -648,6 +656,7 @@ public class Micropolis
 
 		case 15:
 			fireAnalysis();
+			dispatchScan();
 			doDisasters();
 			break;
 
@@ -831,6 +840,21 @@ public class Micropolis
 				}
 			}
 		}
+	}
+	
+	void dispatchScan()
+	{
+		dispatchMap = smoothFirePoliceMap(dispatchMap);
+		dispatchMap = smoothFirePoliceMap(dispatchMap);
+		dispatchMap = smoothFirePoliceMap(dispatchMap);
+		
+		for (int sy = 0; sy < dispatchMap.length; sy++) {
+			for (int sx = 0; sx < dispatchMap[sy].length; sx++) {
+				dispatchMapEffect[sy][sx] = dispatchMap[sy][sx];
+			}
+		}
+		
+		fireMapOverlayDataChanged(MapState.DISPATCH_OVERLAY);
 	}
 
 	void crimeScan()
@@ -1111,6 +1135,12 @@ public class Micropolis
 	public int getFireStationCoverage(int xpos, int ypos)
 	{
 		return fireRate[ypos/8][xpos/8];
+	}
+	
+	/** Accessor method for dispatchMapEffect[]. */
+	public int getDispatchCoverage(int xpos, int ypos)
+	{
+		return dispatchMapEffect[ypos/8][xpos/8];
 	}
 
 	/** Accessor method for landValueMem overlay. */

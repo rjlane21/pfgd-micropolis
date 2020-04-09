@@ -85,6 +85,8 @@ class MapScanner extends TileBehavior
 		case SEAPORT:
 			doSeaport();
 			return;
+		case DISPATCHCENTER:
+			doDispatchCenter();
 		default:
 			assert false;
 		}
@@ -219,6 +221,13 @@ class MapScanner extends TileBehavior
 		} else {
 			z = city.fireEffect/2; // from the funding ratio
 		}
+		
+		//Dispatch Enhancement
+		int cov = city.getDispatchCoverage(xpos, ypos);
+		int level = cov > 100 ? 4 :
+					cov > 50 ? 3 :
+					cov != 0 ? 2 : 1;
+		z *= level;
 
 		traffic.mapX = xpos;
 		traffic.mapY = ypos;
@@ -243,6 +252,13 @@ class MapScanner extends TileBehavior
 		} else {
 			z = city.policeEffect / 2;
 		}
+		
+		//Dispatch Enhancement
+		int cov = city.getDispatchCoverage(xpos, ypos);
+		int level = cov > 100 ? 4 :
+					cov > 50 ? 3 :
+					cov != 0 ? 2 : 1;
+		z *= level;
 
 		traffic.mapX = xpos;
 		traffic.mapY = ypos;
@@ -251,6 +267,30 @@ class MapScanner extends TileBehavior
 		}
 
 		city.policeMap[ypos/8][xpos/8] += z;
+	}
+	
+	void doDispatchCenter()
+	{
+		boolean powerOn = checkZonePower();
+		city.dispatchCount++;
+		if ((city.cityTime % 8) == 0) {
+			repairZone(DISPATCHCENTER, 3);
+		}
+		
+		int z;
+		if (powerOn) {
+			z = city.dispatchEffect;
+		} else {
+			z = city.dispatchEffect / 2;
+		}
+		
+		traffic.mapX = xpos;
+		traffic.mapY = ypos;
+		if (!traffic.findPerimeterRoad()) {
+			z /= 2;
+		}
+		
+		city.dispatchMap[ypos/8][xpos/8] += z;
 	}
 
 	void doStadiumEmpty()
